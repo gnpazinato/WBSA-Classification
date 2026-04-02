@@ -552,20 +552,17 @@ const Players = {
           
           <div class="iwbf-right">
             <div class="iwbf-header-right">
-              WBSA CLASSIFICATION CARD
-            </div>
-            
-            <div class="iwbf-boxes">
-              <div class="iwbf-box" style="width:35pt;">Valid</div>
-              <div class="iwbf-box" style="width:35pt;">From</div>
-              <div class="iwbf-box" style="width:35pt; font-weight:bold;">${new Date().getFullYear()}</div>
+              <div>WBSA CLASSIFICATION CARD</div>
+              <div style="font-size: 11pt; font-weight: normal; margin-top: 4px;">
+                ${App.escapeHtml(p.first_name || '')} ${App.escapeHtml(p.last_name || '')}
+              </div>
             </div>
             
             <div class="iwbf-class-block">
               <div class="iwbf-class-text">
-                <div style="display:flex; justify-content:space-between; margin-top:20px;">
-                   <div><span>Surname</span><br><strong>${App.escapeHtml(p.last_name || '')}</strong></div>
-                   <div style="text-align:right;"><span>First Name</span><br><strong>${App.escapeHtml(p.first_name || '')}</strong></div>
+                <div style="margin-top:15px; text-align:center;">
+                  <div style="font-size: 6pt; color: #666; margin-bottom: 2px;">Jersey Number</div>
+                  <div style="width: 25mm; height: 18mm; border: 1px solid #000; margin: 0 auto;"></div>
                 </div>
               </div>
               <div class="iwbf-class-separator"></div>
