@@ -4,7 +4,12 @@
  */
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase;
+try {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+  console.error("Failed to initialize Supabase client. Is the CDN blocked?", e);
+}
 
 const Auth = {
   /**

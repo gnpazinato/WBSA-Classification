@@ -67,12 +67,16 @@
       const errorDiv = document.getElementById('login-error');
       const submitBtn = document.getElementById('btn-login');
 
-      // Check auth status in background to not block listeners
-      Auth.redirectIfAuthenticated().catch(console.error);
-
+      // 1. Attach listener FIRST so the form can never bypass JS
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         errorDiv.style.display = 'none';
+
+        if (typeof Auth === 'undefined' || !supabase) {
+          errorDiv.textContent = 'Erro de rede: O Supabase não carregou. Verifique sua conexão ou desative o bloqueador de anúncios/AdBlocker.';
+          errorDiv.style.display = 'flex';
+          return;
+        }
 
         const email = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
@@ -96,6 +100,15 @@
           submitBtn.textContent = 'Sign In';
         }
       });
+      
+      // 2. Check auth status in background AFTER attaching event listeners
+      try {
+        if (typeof Auth !== 'undefined' && supabase) {
+          Auth.redirectIfAuthenticated().catch(console.error);
+        }
+      } catch (e) {
+        console.error(e);
+      }
     });
   </script>
 </body>
