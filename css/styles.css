@@ -1100,16 +1100,19 @@ textarea.form-control {
     display: none !important;
   }
   
-  /* Present the card cleanly */
+  /* Present the card cleanly centered at the top */
   .iwbf-card-wrapper {
-    display: block !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
+    width: 100% !important;
   }
   
   .iwbf-card {
     border: none !important; /* Will let physical paper boundaries act as border */
-    margin: 0 !important;
+    margin: 0 auto !important;
   }
 }
 
