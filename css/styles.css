@@ -903,23 +903,20 @@ textarea.form-control {
   box-sizing: border-box;
 }
 
+.iwbf-left-half {
+  width: 50%;
+  border-right: 0.5pt solid #000;
+  display: flex;
+  box-sizing: border-box;
+  padding-right: 3mm;
+}
+
 .iwbf-left {
-  width: 48mm;
+  width: 32mm;
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-left: 20px;
-}
-
-.iwbf-rotated-text {
-  position: absolute;
-  left: 3px;
-  top: 50%;
-  transform: translateY(-50%) rotate(-90deg);
-  transform-origin: left center;
-  font-size: 8pt;
-  font-weight: bold;
-  letter-spacing: 1px;
+  padding-left: 5px;
 }
 
 .iwbf-logo {
@@ -949,11 +946,9 @@ textarea.form-control {
 }
 
 .iwbf-center {
-  width: 55mm;
+  flex: 1; /* Take up rest of the 50% left half */
   display: flex;
   flex-direction: column;
-  border-right: 0.5pt solid #000;
-  padding-right: 5mm;
 }
 
 .iwbf-header-center {
@@ -983,10 +978,12 @@ textarea.form-control {
 }
 
 .iwbf-right {
-  flex: 1;
+  width: 50%;
+  padding-left: 3mm;
   position: relative;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .iwbf-header-right {

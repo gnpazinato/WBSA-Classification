@@ -530,23 +530,24 @@ const Players = {
       <div class="iwbf-card-wrapper">
         <div class="iwbf-card">
           
-          <div class="iwbf-left">
-            <div class="iwbf-rotated-text">IDENTITY CARD</div>
-            <div class="iwbf-logo">
-              <svg width="60" height="40" viewBox="0 0 100 50">
-                <text x="10" y="30" font-family="Helvetica" font-weight="bold" font-size="28" fill="#1a1a2e">WBSA</text>
-              </svg>
+          <div class="iwbf-left-half">
+            <div class="iwbf-left">
+              <div class="iwbf-logo">
+                <svg width="60" height="40" viewBox="0 0 100 50">
+                  <text x="10" y="30" font-family="Helvetica" font-weight="bold" font-size="28" fill="#1a1a2e">WBSA</text>
+                </svg>
+              </div>
+              <div class="iwbf-photo">${photoImg}</div>
             </div>
-            <div class="iwbf-photo">${photoImg}</div>
-          </div>
-          
-          <div class="iwbf-center">
-            <div class="iwbf-header-center">WHEELCHAIR BASKETBALL<br>SOUTH AFRICA</div>
-            <div class="iwbf-fields-left">
-              <div class="iwbf-line"><span>Name</span><strong>${App.escapeHtml(p.last_name || '')}</strong></div>
-              <div class="iwbf-line"><span>First Name</span><strong>${App.escapeHtml(p.first_name || '')}</strong></div>
-              <div class="iwbf-line"><span>Place of Birth</span><strong>${App.escapeHtml(p.birth_country || '')}</strong></div>
-              <div class="iwbf-line"><span>Date of Birth</span><strong>${dobString}</strong></div>
+            
+            <div class="iwbf-center">
+              <div class="iwbf-header-center">WHEELCHAIR BASKETBALL<br>SOUTH AFRICA</div>
+              <div class="iwbf-fields-left">
+                <div class="iwbf-line"><span>Name</span><strong>${App.escapeHtml(p.last_name || '')}</strong></div>
+                <div class="iwbf-line"><span>First Name</span><strong>${App.escapeHtml(p.first_name || '')}</strong></div>
+                <div class="iwbf-line"><span>Place of Birth</span><strong>${App.escapeHtml(p.birth_country || '')}</strong></div>
+                <div class="iwbf-line"><span>Date of Birth</span><strong>${dobString}</strong></div>
+              </div>
             </div>
           </div>
           
