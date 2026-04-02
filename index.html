@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WBSA Wheelchair Basketball Classification System — Admin Login">
+  <title>WBSA Classification — Login</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="logo-icon">🏀</div>
+          <h1>WBSA Classification</h1>
+          <p>Wheelchair Basketball South Africa</p>
+        </div>
+
+        <div id="login-error" class="alert alert-error" style="display:none;"></div>
+
+        <form id="login-form" autocomplete="on">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input
+              type="email"
+              id="login-email"
+              class="form-control"
+              placeholder="admin@wbsa.org"
+              required
+              autocomplete="email"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              class="form-control"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            >
+          </div>
+
+          <button type="submit" id="btn-login" class="btn btn-primary btn-lg btn-block" style="margin-top:0.5rem;">
+            Sign In
+          </button>
+        </form>
+
+        <p style="text-align:center; margin-top:1.5rem; font-size:0.78rem; color:var(--text-muted);">
+          Administrator access only
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('login-form');
+      const errorDiv = document.getElementById('login-error');
+      const submitBtn = document.getElementById('btn-login');
+
+      // Check auth status in background to not block listeners
+      Auth.redirectIfAuthenticated().catch(console.error);
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorDiv.style.display = 'none';
+
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!email || !password) {
+          errorDiv.textContent = 'Please enter email and password.';
+          errorDiv.style.display = 'flex';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in...';
+
+        try {
+          await Auth.login(email, password);
+          window.location.href = 'dashboard.html';
+        } catch (err) {
+          errorDiv.textContent = err.message || 'Invalid credentials. Please try again.';
+          errorDiv.style.display = 'flex';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

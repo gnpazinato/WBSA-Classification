@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WBSA Classification Dashboard — Overview of player statistics and distributions">
+  <title>WBSA Classification — Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="brand-icon">🏀</div>
+          <div>
+            <h2>WBSA</h2>
+            <small>Classification System</small>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <a href="dashboard.html" class="nav-item" data-page="dashboard">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+          <a href="players.html" class="nav-item" data-page="players">
+            <span class="nav-icon">👥</span>
+            <span>Players</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="#" class="nav-item" id="btn-logout">
+          <span class="nav-icon">🚪</span>
+          <span>Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="page-header">
+        <div class="page-header-left">
+          <h1>Dashboard</h1>
+          <p>Overview of the classification database</p>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Players</div>
+            <div class="stat-value" id="stat-total">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Players</div>
+            <div class="stat-value" id="stat-active">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Male Players</div>
+            <div class="stat-value" id="stat-male">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Female Players</div>
+            <div class="stat-value" id="stat-female">—</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card card">
+            <div class="chart-title">Classification Distribution</div>
+            <div class="bar-chart" id="chart-classification">
+              <div class="loading-overlay"><div class="spinner"></div></div>
+            </div>
+          </div>
+          <div class="chart-card card">
+            <div class="chart-title">Top Zones</div>
+            <div class="bar-chart" id="chart-zone">
+              <div class="loading-overlay"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Players -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recently Added</h3>
+            <a href="players.html" class="btn btn-secondary btn-sm">View All →</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Gender</th>
+                  <th>Zone</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-players-body">
+                <tr><td colspan="6" class="loading-overlay"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Toggle -->
+  <button class="mobile-toggle" id="mobile-toggle">☰</button>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

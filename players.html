@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WBSA Player Management — Search, filter, add, edit, and export player classification data">
+  <title>WBSA Classification — Players</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="brand-icon">🏀</div>
+          <div>
+            <h2>WBSA</h2>
+            <small>Classification System</small>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <a href="dashboard.html" class="nav-item" data-page="dashboard">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+          <a href="players.html" class="nav-item" data-page="players">
+            <span class="nav-icon">👥</span>
+            <span>Players</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="#" class="nav-item" id="btn-logout">
+          <span class="nav-icon">🚪</span>
+          <span>Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="page-header">
+        <div class="page-header-left">
+          <h1>Players</h1>
+          <p id="player-count">Loading players...</p>
+        </div>
+        <div class="page-header-right" style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" id="btn-export">
+            📥 Export CSV
+          </button>
+          <button class="btn btn-primary" id="btn-add-player">
+            ＋ Add Player
+          </button>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <!-- Toolbar: Search + Filters -->
+        <div class="toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="search-input"
+              class="form-control"
+              placeholder="Search by name, number, zone, disability..."
+              style="padding-left:2.5rem;"
+            >
+          </div>
+          <div class="filter-group">
+            <select id="filter-classification" class="form-control">
+              <option value="">All Classes</option>
+            </select>
+            <select id="filter-gender" class="form-control" style="min-width:100px;">
+              <option value="">All Genders</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+            </select>
+            <select id="filter-zone" class="form-control">
+              <option value="">All Zones</option>
+            </select>
+            <select id="filter-status" class="form-control" style="min-width:100px;">
+              <option value="">All Status</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Players Table -->
+        <div class="card" style="padding:0;">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th data-sort="player_number" onclick="Players.sortBy('player_number')"># <span class="sort-indicator">▲</span></th>
+                  <th data-sort="last_name" onclick="Players.sortBy('last_name')">Name <span class="sort-indicator">⇅</span></th>
+                  <th data-sort="classification" onclick="Players.sortBy('classification')">Class <span class="sort-indicator">⇅</span></th>
+                  <th data-sort="gender" onclick="Players.sortBy('gender')">Gender <span class="sort-indicator">⇅</span></th>
+                  <th data-sort="zone" onclick="Players.sortBy('zone')">Zone <span class="sort-indicator">⇅</span></th>
+                  <th data-sort="disability" onclick="Players.sortBy('disability')">Disability <span class="sort-indicator">⇅</span></th>
+                  <th data-sort="is_active" onclick="Players.sortBy('is_active')">Status <span class="sort-indicator">⇅</span></th>
+                  <th style="width:120px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="players-table-body">
+                <tr><td colspan="8" class="loading-overlay"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination" style="padding:0.75rem 1rem;">
+            <div class="pagination-info" id="pagination-info">Loading...</div>
+            <div class="pagination-controls" id="pagination-controls"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Toggle -->
+  <button class="mobile-toggle" id="mobile-toggle">☰</button>
+
+  <!-- Add/Edit Player Modal -->
+  <div class="modal-overlay" id="player-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Add New Player</h2>
+        <button class="modal-close" data-close-modal>✕</button>
+      </div>
+      <form id="player-form">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="field-player-number">Player Number *</label>
+              <input type="number" id="field-player-number" class="form-control" required min="1">
+            </div>
+            <div class="form-group">
+              <label for="field-classification">Classification</label>
+              <select id="field-classification" class="form-control">
+                <option value="">— Select —</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="field-last-name">Last Name *</label>
+              <input type="text" id="field-last-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="field-first-name">First Name *</label>
+              <input type="text" id="field-first-name" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="field-birth-date">Date of Birth</label>
+              <input type="date" id="field-birth-date" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="field-gender">Gender</label>
+              <select id="field-gender" class="form-control">
+                <option value="">— Select —</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="field-birth-country">Birth Country</label>
+              <input type="text" id="field-birth-country" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="field-legal-nationality">Legal Nationality</label>
+              <input type="text" id="field-legal-nationality" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="field-zone">Zone</label>
+              <select id="field-zone" class="form-control">
+                <option value="">— Select —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="field-card-issue-date">Card Issue Date</label>
+              <input type="date" id="field-card-issue-date" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="field-disability">Disability</label>
+            <input type="text" id="field-disability" class="form-control" placeholder="e.g. Spina Bifida, Paraplegia, Amputee...">
+          </div>
+
+          <div class="form-group">
+            <label for="field-notes">Notes</label>
+            <textarea id="field-notes" class="form-control" rows="3" placeholder="ID numbers, card notes, etc."></textarea>
+          </div>
+
+          <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="checkbox" id="field-is-active" checked style="accent-color:var(--accent-primary);">
+            <label for="field-is-active" style="margin-bottom:0;">Active Player</label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Player</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Player Modal (Player Card) -->
+  <div class="modal-overlay" id="player-view-modal">
+    <div class="modal" style="max-width:650px;">
+      <div class="modal-header">
+        <h2>Player Card</h2>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+          <button class="modal-close" data-close-modal>✕</button>
+        </div>
+      </div>
+      <div class="modal-body" id="player-view-body">
+        <!-- Player card rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-body">
+        <div class="confirm-dialog">
+          <div class="confirm-icon">⚠️</div>
+          <h3 id="confirm-title">Confirm</h3>
+          <p id="confirm-message">Are you sure?</p>
+          <div class="confirm-actions">
+            <button class="btn btn-secondary" id="confirm-no">Cancel</button>
+            <button class="btn btn-danger" id="confirm-yes">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/players.js"></script>
+</body>
+</html>
