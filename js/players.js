@@ -533,9 +533,7 @@ const Players = {
           <div class="iwbf-left-half">
             <div class="iwbf-left">
               <div class="iwbf-logo">
-                <svg width="60" height="40" viewBox="0 0 100 50">
-                  <text x="10" y="30" font-family="Helvetica" font-weight="bold" font-size="28" fill="#1a1a2e">WBSA</text>
-                </svg>
+                <img src="assets/wbsa-logo.jpeg" style="height: 100%; width: 100%; object-fit: contain; mix-blend-mode: multiply;" alt="WBSA Logo">
               </div>
               <div class="iwbf-photo">${photoImg}</div>
             </div>
