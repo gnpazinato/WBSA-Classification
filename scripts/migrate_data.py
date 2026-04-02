@@ -14,7 +14,7 @@ import os
 
 # --- Supabase Configuration ---
 SUPABASE_URL = "https://haqsvbmnitxutlzgckld.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhcXN2Ym1uaXR4dXRsemdja2xkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTEzMzE1MiwiZXhwIjoyMDkwNzA5MTUyfQ.-BnbiV75tKfCL9gLLJtbQfWb6pkz-_9XiZ7WWNRRW8w"
+SUPABASE_KEY = "SUA_CHAVE_AQUI"
 # Use service_role key for bypassing RLS during migration.
 # If you have a service_role key, replace SUPABASE_KEY above with it.
 

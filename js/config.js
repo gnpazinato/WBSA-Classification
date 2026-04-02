@@ -1,6 +1,6 @@
 // Supabase Configuration
 const SUPABASE_URL = 'https://haqsvbmnitxutlzgckld.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhcXN2Ym1uaXR4dXRsemdja2xkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzMxNTIsImV4cCI6MjA5MDcwOTE1Mn0.z19LBiiZ7NJaakhc0EwkOEgBAaonVzve43_oHwiAiVU';
+const SUPABASE_ANON_KEY = 'sb_publishable_TwjhLkgru5GOZeBj5TdMPQ_8e1lZbRz';
 
 // App Settings
 const APP_CONFIG = {
