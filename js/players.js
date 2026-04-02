@@ -340,6 +340,16 @@ const Players = {
     document.getElementById('modal-title').textContent = 'Add New Player';
     document.getElementById('player-form').reset();
     document.getElementById('field-is-active').checked = true;
+    
+    // Hide player number field on create
+    document.getElementById('group-player-number').style.display = 'none';
+    document.getElementById('field-player-number').value = '';
+    
+    // Reset photo preview
+    document.getElementById('photo-preview-container').style.display = 'none';
+    document.getElementById('photo-preview').src = '';
+    document.getElementById('form-upload-status').textContent = '';
+    
     App.openModal('player-modal');
   },
 
@@ -351,6 +361,7 @@ const Players = {
     document.getElementById('modal-title').textContent = 'Edit Player';
 
     // Fill form
+    document.getElementById('group-player-number').style.display = 'block';
     document.getElementById('field-player-number').value = player.player_number || '';
     document.getElementById('field-last-name').value = player.last_name || '';
     document.getElementById('field-first-name').value = player.first_name || '';
@@ -364,43 +375,91 @@ const Players = {
     document.getElementById('field-disability').value = player.disability || '';
     document.getElementById('field-is-active').checked = player.is_active !== false;
     document.getElementById('field-notes').value = player.notes || '';
+    
+    // Show photo preview
+    if (player.photo_url) {
+      document.getElementById('photo-preview-container').style.display = 'block';
+      document.getElementById('photo-preview').src = player.photo_url;
+    } else {
+      document.getElementById('photo-preview-container').style.display = 'none';
+      document.getElementById('photo-preview').src = '';
+    }
+    document.getElementById('form-upload-status').textContent = '';
 
     App.openModal('player-modal');
   },
 
   async savePlayer() {
-    const formData = {
-      player_number: parseInt(document.getElementById('field-player-number').value),
-      last_name: document.getElementById('field-last-name').value.trim().toUpperCase(),
-      first_name: document.getElementById('field-first-name').value.trim().toUpperCase(),
-      birth_date: document.getElementById('field-birth-date').value || null,
-      birth_country: document.getElementById('field-birth-country').value.trim() || null,
-      legal_nationality: document.getElementById('field-legal-nationality').value.trim() || null,
-      card_issue_date: document.getElementById('field-card-issue-date').value || null,
-      classification: document.getElementById('field-classification').value || null,
-      zone: document.getElementById('field-zone').value || null,
-      gender: document.getElementById('field-gender').value || null,
-      disability: document.getElementById('field-disability').value.trim() || null,
-      is_active: document.getElementById('field-is-active').checked,
-      notes: document.getElementById('field-notes').value.trim() || null,
-      updated_at: new Date().toISOString()
-    };
-
-    // Validation
-    if (!formData.player_number || isNaN(formData.player_number)) {
-      App.toast('Player number is required', 'error');
-      return;
-    }
-    if (!formData.last_name) {
-      App.toast('Last name is required', 'error');
-      return;
-    }
-    if (!formData.first_name) {
-      App.toast('First name is required', 'error');
-      return;
-    }
+    const submitBtn = document.getElementById('btn-save-player');
+    const uploadStatus = document.getElementById('form-upload-status');
+    const photoFile = document.getElementById('field-photo').files[0];
+    
+    submitBtn.disabled = true;
 
     try {
+      let photoUrl = this.editingPlayer ? this.editingPlayer.photo_url : null;
+      
+      // Upload photo if selected
+      if (photoFile) {
+        uploadStatus.textContent = 'Uploading photo...';
+        const fileExt = photoFile.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        const { error: uploadError } = await window.supabaseClient.storage
+          .from('avatars')
+          .upload(fileName, photoFile);
+          
+        if (uploadError) throw new Error('Failed to upload photo: ' + uploadError.message);
+        
+        const { data: publicUrlData } = window.supabaseClient.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+          
+        photoUrl = publicUrlData.publicUrl;
+      }
+
+      uploadStatus.textContent = 'Saving data...';
+
+      let playerNumber = parseInt(document.getElementById('field-player-number').value);
+      
+      // Auto-generate player number if creating a new player
+      if (!this.editingPlayer) {
+        // Fetch the max player_number
+        const { data: maxPlayer } = await window.supabaseClient
+          .from('players')
+          .select('player_number')
+          .order('player_number', { ascending: false })
+          .limit(1);
+          
+        if (maxPlayer && maxPlayer.length > 0) {
+          playerNumber = maxPlayer[0].player_number + 1;
+        } else {
+          playerNumber = 1; // Fallback to 1 if empty
+        }
+      }
+
+      const formData = {
+        player_number: playerNumber,
+        last_name: document.getElementById('field-last-name').value.trim().toUpperCase(),
+        first_name: document.getElementById('field-first-name').value.trim().toUpperCase(),
+        birth_date: document.getElementById('field-birth-date').value || null,
+        birth_country: document.getElementById('field-birth-country').value.trim() || null,
+        legal_nationality: document.getElementById('field-legal-nationality').value.trim() || null,
+        card_issue_date: document.getElementById('field-card-issue-date').value || null,
+        classification: document.getElementById('field-classification').value || null,
+        zone: document.getElementById('field-zone').value || null,
+        gender: document.getElementById('field-gender').value || null,
+        disability: document.getElementById('field-disability').value.trim() || null,
+        is_active: document.getElementById('field-is-active').checked,
+        notes: document.getElementById('field-notes').value.trim() || null,
+        photo_url: photoUrl,
+        updated_at: new Date().toISOString()
+      };
+
+      // Validation
+      if (!formData.last_name) throw new Error('Last name is required');
+      if (!formData.first_name) throw new Error('First name is required');
+
       if (this.editingPlayer) {
         // Update
         const { error } = await window.supabaseClient
@@ -415,7 +474,7 @@ const Players = {
           .from('players')
           .insert([formData]);
         if (error) throw error;
-        App.toast('Player added successfully', 'success');
+        App.toast(`Player added successfully (ID: #${playerNumber})`, 'success');
       }
 
       App.closeModal('player-modal');
@@ -423,6 +482,9 @@ const Players = {
     } catch (err) {
       console.error('Save failed:', err);
       App.toast(err.message || 'Failed to save player', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      uploadStatus.textContent = '';
     }
   },
 
@@ -458,57 +520,70 @@ const Players = {
     const body = document.getElementById('player-view-body');
     if (!body) return;
 
+    const dobString = App.formatDate(p.birth_date);
+    const photoImg = p.photo_url 
+      ? `<img src="${p.photo_url}" alt="Photo">` 
+      : `<span style="font-size:1.5rem;color:#ccc;">👤</span>`;
+
+    // Redesigned to exact IWBF Card specifics
     body.innerHTML = `
-      <div class="player-card">
-        <div class="player-card-header">
-          <div>
-            <h2>${App.escapeHtml(p.last_name || '')}, ${App.escapeHtml(p.first_name || '')}</h2>
-            <div style="opacity:0.8; font-size:0.9rem;">Player #${p.player_number}</div>
+      <div class="iwbf-card-wrapper">
+        <div class="iwbf-card">
+          
+          <div class="iwbf-left">
+            <div class="iwbf-rotated-text">IDENTITY CARD</div>
+            <div class="iwbf-logo">
+              <svg width="60" height="40" viewBox="0 0 100 50">
+                <text x="10" y="30" font-family="Helvetica" font-weight="bold" font-size="28" fill="#1a1a2e">WBSA</text>
+              </svg>
+            </div>
+            <div class="iwbf-photo">${photoImg}</div>
           </div>
-          <div class="card-class">${App.escapeHtml(p.classification || '—')}</div>
+          
+          <div class="iwbf-center">
+            <div class="iwbf-header-center">WHEELCHAIR BASKETBALL<br>SOUTH AFRICA</div>
+            <div class="iwbf-fields-left">
+              <div class="iwbf-line"><span>Name</span><strong>${App.escapeHtml(p.last_name || '')}</strong></div>
+              <div class="iwbf-line"><span>First Name</span><strong>${App.escapeHtml(p.first_name || '')}</strong></div>
+              <div class="iwbf-line"><span>Place of Birth</span><strong>${App.escapeHtml(p.birth_country || '')}</strong></div>
+              <div class="iwbf-line"><span>Date of Birth</span><strong>${dobString}</strong></div>
+            </div>
+          </div>
+          
+          <div class="iwbf-right">
+            <div class="iwbf-header-right">
+              WBSA CLASSIFICATION CARD
+            </div>
+            
+            <div class="iwbf-boxes">
+              <div class="iwbf-box" style="width:35pt;">Valid</div>
+              <div class="iwbf-box" style="width:35pt;">From</div>
+              <div class="iwbf-box" style="width:35pt; font-weight:bold;">${new Date().getFullYear()}</div>
+            </div>
+            
+            <div class="iwbf-class-block">
+              <div class="iwbf-class-text">
+                <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                   <div><span>Surname</span><br><strong>${App.escapeHtml(p.last_name || '')}</strong></div>
+                   <div style="text-align:right;"><span>First Name</span><br><strong>${App.escapeHtml(p.first_name || '')}</strong></div>
+                </div>
+              </div>
+              <div class="iwbf-class-separator"></div>
+              <div class="iwbf-class-number">${p.classification || ''}</div>
+            </div>
+          </div>
+
         </div>
-        <div class="player-card-body">
-          <div class="player-card-field">
-            <label>Date of Birth</label>
-            <p>${App.formatDate(p.birth_date)}</p>
-          </div>
-          <div class="player-card-field">
-            <label>Gender</label>
-            <p>${p.gender === 'M' ? 'Male' : p.gender === 'F' ? 'Female' : '—'}</p>
-          </div>
-          <div class="player-card-field">
-            <label>Birth Country</label>
-            <p>${App.escapeHtml(p.birth_country || '—')}</p>
-          </div>
-          <div class="player-card-field">
-            <label>Legal Nationality</label>
-            <p>${App.escapeHtml(p.legal_nationality || '—')}</p>
-          </div>
-          <div class="player-card-field">
-            <label>Zone</label>
-            <p>${App.escapeHtml(p.zone || '—')}</p>
-          </div>
-          <div class="player-card-field">
-            <label>Disability</label>
-            <p>${App.escapeHtml(p.disability || '—')}</p>
-          </div>
-          <div class="player-card-field">
-            <label>Card Issue Date</label>
-            <p>${App.formatDate(p.card_issue_date)}</p>
-          </div>
-          <div class="player-card-field">
-            <label>Status</label>
-            <p>${p.is_active ? 'Active' : 'Inactive'}</p>
-          </div>
-          ${p.notes ? `
-          <div class="player-card-field" style="grid-column: 1 / -1;">
-            <label>Notes</label>
-            <p style="font-weight:400; white-space:pre-wrap;">${App.escapeHtml(p.notes)}</p>
-          </div>` : ''}
-        </div>
-        <div class="player-card-footer">
-          <span>WBSA Classification System</span>
-          <span>Card issued: ${App.formatDate(p.card_issue_date)}</span>
+      </div>
+      
+      <div class="player-card-footer no-print" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; font-size:0.85rem;">
+          <div><strong>Gender:</strong> ${p.gender === 'M' ? 'Male' : p.gender === 'F' ? 'Female' : '—'}</div>
+          <div><strong>Zone:</strong> ${App.escapeHtml(p.zone || '—')}</div>
+          <div><strong>Disability:</strong> ${App.escapeHtml(p.disability || '—')}</div>
+          <div><strong>Card Issue Date:</strong> ${App.formatDate(p.card_issue_date)}</div>
+          <div><strong>Status:</strong> ${p.is_active ? 'Active' : 'Inactive'}</div>
+          <div><strong>ID / Notes:</strong> ${App.escapeHtml(p.notes || '')}</div>
         </div>
       </div>
     `;

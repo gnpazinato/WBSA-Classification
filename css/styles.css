@@ -881,72 +881,210 @@ textarea.form-control {
 .toast-error { border-left: 3px solid var(--accent-danger); }
 .toast-info { border-left: 3px solid var(--accent-primary); }
 
-/* ---------- Player Card (Print) ---------- */
-.player-card-container {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.player-card {
+/* ---------- Player Card (IWBF Print Layout) ---------- */
+.iwbf-card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: white;
-  color: #1a1a2e;
-  border-radius: var(--radius-lg);
+  color: black;
+  font-family: "Helvetica", "Arial", sans-serif;
+  padding: 1rem;
+}
+
+.iwbf-card {
+  width: 183.8mm;
+  height: 48.7mm;
+  background: white;
+  border: 1px solid #000;
+  display: flex;
+  position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
 }
 
-.player-card-header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  color: white;
-  padding: 1.5rem 2rem;
+.iwbf-left {
+  width: 48mm;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 20px;
+}
+
+.iwbf-rotated-text {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
+  font-size: 8pt;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.iwbf-logo {
+  height: 15mm;
+  font-weight: bold;
+  font-size: 14pt;
+  margin-top: 2px;
+}
+
+.iwbf-photo {
+  width: 26.5mm;
+  height: 26.5mm;
+  border: 1px solid #000;
+  margin-top: auto;
+  margin-bottom: 2mm;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  background: #eee;
+  overflow: hidden;
 }
 
-.player-card-header h2 {
-  font-size: 1.3rem;
+.iwbf-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.player-card-header .card-class {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #fbbf24;
+.iwbf-center {
+  width: 55mm;
+  display: flex;
+  flex-direction: column;
+  border-right: 0.5pt solid #000;
+  padding-right: 5mm;
 }
 
-.player-card-body {
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+.iwbf-header-center {
+  font-size: 9pt;
+  font-weight: bold;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  line-height: 1.1;
 }
 
-.player-card-field {
-  margin-bottom: 0.5rem;
+.iwbf-fields-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.player-card-field label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.player-card-field p {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1a1a2e;
-}
-
-.player-card-footer {
-  border-top: 2px solid #e2e8f0;
-  padding: 1rem 2rem;
+.iwbf-line {
+  border-bottom: 0.5pt solid #000;
+  padding-bottom: 1px;
   display: flex;
   justify-content: space-between;
+  font-size: 8pt;
+}
+
+.iwbf-line span {
+  font-size: 6pt;
+}
+
+.iwbf-right {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.iwbf-header-right {
+  font-size: 8pt;
+  font-weight: bold;
+  position: absolute;
+  top: 4px;
+  left: 5mm;
+}
+
+.iwbf-boxes {
+  position: absolute;
+  top: 10mm;
+  right: 5mm;
+  display: flex;
+}
+
+.iwbf-box {
+  width: 30pt;
+  height: 14pt;
+  border: 1px solid #000;
+  font-size: 6pt;
+  display: flex;
   align-items: center;
-  font-size: 0.8rem;
-  color: #64748b;
+  justify-content: center;
+}
+
+.iwbf-class-block {
+  margin-top: 18mm;
+  display: flex;
+  border-top: 0.5pt solid #000;
+  height: 100%;
+}
+
+.iwbf-class-text {
+  flex: 1;
+  padding: 0 5mm;
+  font-size: 8pt;
+}
+
+.iwbf-class-text span {
+  font-size: 6pt;
+}
+
+.iwbf-class-separator {
+  width: 0.5pt;
+  background: #000;
+  height: 100%;
+}
+
+.iwbf-class-number {
+  width: 40mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32pt;
+  font-weight: bold;
+}
+
+/* Print CSS */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #player-view-modal, #player-view-modal *,
+  .modal-overlay.active .modal {
+    visibility: visible;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+
+  .modal-overlay.active .modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  
+  .modal-header {
+    display: none !important;
+  }
+  
+  .iwbf-card-wrapper {
+    padding: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  
+  .iwbf-card {
+    border: none; /* Let standard card stock border it physically */
+  }
 }
 
 /* ---------- Charts Grid ---------- */
