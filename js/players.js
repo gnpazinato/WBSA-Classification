@@ -157,7 +157,7 @@ const Players = {
       document.getElementById('players-table-body').innerHTML =
         `<tr><td colspan="8" class="loading-overlay"><div class="spinner"></div></td></tr>`;
 
-      const { data, error } = await supabase
+      const { data, error } = await window.supabaseClient
         .from('players')
         .select('*')
         .order('player_number', { ascending: true });
@@ -403,7 +403,7 @@ const Players = {
     try {
       if (this.editingPlayer) {
         // Update
-        const { error } = await supabase
+        const { error } = await window.supabaseClient
           .from('players')
           .update(formData)
           .eq('id', this.editingPlayer.id);
@@ -411,7 +411,7 @@ const Players = {
         App.toast('Player updated successfully', 'success');
       } else {
         // Insert
-        const { error } = await supabase
+        const { error } = await window.supabaseClient
           .from('players')
           .insert([formData]);
         if (error) throw error;
@@ -438,7 +438,7 @@ const Players = {
     if (!confirmed) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await window.supabaseClient
         .from('players')
         .delete()
         .eq('id', id);

@@ -72,7 +72,7 @@
         e.preventDefault();
         errorDiv.style.display = 'none';
 
-        if (typeof Auth === 'undefined' || !supabase) {
+        if (typeof window.Auth === 'undefined' || !window.supabaseClient) {
           errorDiv.textContent = 'Erro de rede: O Supabase não carregou. Verifique sua conexão ou desative o bloqueador de anúncios/AdBlocker.';
           errorDiv.style.display = 'flex';
           return;
@@ -103,7 +103,7 @@
       
       // 2. Check auth status in background AFTER attaching event listeners
       try {
-        if (typeof Auth !== 'undefined' && supabase) {
+        if (typeof window.Auth !== 'undefined' && window.supabaseClient) {
           Auth.redirectIfAuthenticated().catch(console.error);
         }
       } catch (e) {

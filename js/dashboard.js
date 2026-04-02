@@ -29,24 +29,24 @@ const Dashboard = {
   async loadStats() {
     try {
       // Total players
-      const { count: total } = await supabase
+      const { count: total } = await window.supabaseClient
         .from('players')
         .select('*', { count: 'exact', head: true });
 
       // Active players
-      const { count: active } = await supabase
+      const { count: active } = await window.supabaseClient
         .from('players')
         .select('*', { count: 'exact', head: true })
         .eq('is_active', true);
 
       // Male players
-      const { count: male } = await supabase
+      const { count: male } = await window.supabaseClient
         .from('players')
         .select('*', { count: 'exact', head: true })
         .eq('gender', 'M');
 
       // Female players
-      const { count: female } = await supabase
+      const { count: female } = await window.supabaseClient
         .from('players')
         .select('*', { count: 'exact', head: true })
         .eq('gender', 'F');
@@ -64,7 +64,7 @@ const Dashboard = {
   async loadCharts() {
     try {
       // Classification distribution
-      const { data: players } = await supabase
+      const { data: players } = await window.supabaseClient
         .from('players')
         .select('classification, zone')
         .eq('is_active', true);
@@ -135,7 +135,7 @@ const Dashboard = {
 
   async loadRecentPlayers() {
     try {
-      const { data: players } = await supabase
+      const { data: players } = await window.supabaseClient
         .from('players')
         .select('*')
         .order('created_at', { ascending: false })

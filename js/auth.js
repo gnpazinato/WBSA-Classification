@@ -1,22 +1,30 @@
 /**
  * WBSA Classification — Auth Module
- * Handles Supabase authentication (login, logout, session checks)
  */
 
 // Initialize Supabase client
-let supabase;
+let supabaseClient = null;
+
 try {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+    throw new Error('Supabase CDN not loaded correctly');
+  }
+
+  if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+    throw new Error('Supabase config not loaded correctly');
+  }
+
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('Supabase client initialized successfully');
 } catch (e) {
-  console.error("Failed to initialize Supabase client. Is the CDN blocked?", e);
+  console.error('Failed to initialize Supabase client:', e);
 }
 
 const Auth = {
-  /**
-   * Login with email and password
-   */
   async login(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    if (!supabaseClient) throw new Error('Supabase client not initialized');
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
@@ -24,21 +32,19 @@ const Auth = {
     return data;
   },
 
-  /**
-   * Logout current user
-   */
   async logout() {
-    const { error } = await supabase.auth.signOut();
+    if (!supabaseClient) throw new Error('Supabase client not initialized');
+
+    const { error } = await supabaseClient.auth.signOut();
     if (error) throw error;
     window.location.href = 'index.html';
   },
 
-  /**
-   * Get current session
-   */
   async getSession() {
+    if (!supabaseClient) return null;
+
     try {
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await supabaseClient.auth.getSession();
       if (error) console.error('Supabase session error:', error);
       return data?.session || null;
     } catch (err) {
@@ -47,12 +53,11 @@ const Auth = {
     }
   },
 
-  /**
-   * Get current user
-   */
   async getUser() {
+    if (!supabaseClient) return null;
+
     try {
-      const { data, error } = await supabase.auth.getUser();
+      const { data, error } = await supabaseClient.auth.getUser();
       if (error) console.error('Supabase user error:', error);
       return data?.user || null;
     } catch (err) {
@@ -61,10 +66,6 @@ const Auth = {
     }
   },
 
-  /**
-   * Require authentication — redirect to login if not authenticated.
-   * Call this at the top of each protected page.
-   */
   async requireAuth() {
     const session = await this.getSession();
     if (!session) {
@@ -74,9 +75,6 @@ const Auth = {
     return session;
   },
 
-  /**
-   * If already authenticated, redirect away from login page.
-   */
   async redirectIfAuthenticated() {
     const session = await this.getSession();
     if (session) {
@@ -84,3 +82,6 @@ const Auth = {
     }
   }
 };
+
+window.Auth = Auth;
+window.supabaseClient = supabaseClient;
